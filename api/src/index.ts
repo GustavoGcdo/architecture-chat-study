@@ -9,19 +9,19 @@ app.use(express.json());
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: '*',
-  },
+    origin: '*'
+  }
 });
 
 type User = { name: string; socketId: string };
 type Message = { text: string; user: User };
 
 let users: User[] = [];
-let messages: Message[] = [];
+const messages: Message[] = [];
 
 app.get('/', (req, res) => {
   return res.json({
-    message: 'eae',
+    message: 'eae'
   });
 });
 
@@ -36,13 +36,13 @@ app.post('/entrar', (req, res) => {
   io.emit('enter-chat', { name, socketId });
 
   return res.status(200).json({
-    message: 'sucesso',
+    message: 'sucesso'
   });
 });
 
 app.post('/message', (req, res) => {
   const { text, username } = req.body;
-  const user = users.find((user) => user.name == username);
+  const user = users.find((user) => user.name === username);
 
   if (text && text.trim().length > 0 && user) {
     messages.push({ text, user });
