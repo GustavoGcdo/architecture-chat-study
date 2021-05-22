@@ -1,7 +1,7 @@
-const { Server } = require('socket.io');
-const express = require('express');
-const http = require('http');
-const cors = require('cors');
+import { Server } from 'socket.io';
+import express from 'express';
+import http from 'http';
+import cors from 'cors';
 
 const app = express();
 app.use(cors());
@@ -13,8 +13,11 @@ const io = new Server(server, {
   },
 });
 
-let users = [];
-let messages = [];
+type User = { name: string; socketId: string };
+type Message = { text: string; user: User };
+
+let users: User[] = [];
+let messages: Message[] = [];
 
 app.get('/', (req, res) => {
   return res.json({
@@ -40,7 +43,7 @@ app.post('/entrar', (req, res) => {
 app.post('/message', (req, res) => {
   const { text, username } = req.body;
   const user = users.find((user) => user.name == username);
-  
+
   if (text && text.trim().length > 0 && user) {
     messages.push({ text, user });
     io.emit('message', { text, user });
