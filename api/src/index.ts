@@ -2,19 +2,19 @@ import { Server } from 'socket.io';
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
+import { User } from './models/user';
+import { Message } from './models/message';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 const server = http.createServer(app);
+
 const io = new Server(server, {
   cors: {
     origin: '*'
   }
 });
-
-type User = { name: string; socketId: string };
-type Message = { text: string; user: User };
 
 let users: User[] = [];
 const messages: Message[] = [];
