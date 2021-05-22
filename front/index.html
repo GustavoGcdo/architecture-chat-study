@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<style>
+    body,
+    html {
+        height: 100vh;
+        width: 100vw;
+        padding: 0;
+        margin: 0;
+    }
+
+    .main {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    input {
+        margin: 5px;
+        padding: 10px;
+    }
+
+    button {
+        padding: 10px;
+    }
+
+    .chat-area {
+        margin-top: 50px;
+        border: 1px solid;
+        min-width: 500px;
+        min-height: 500px;
+        max-height: 500px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .messages {
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        flex-grow: 1;
+        overflow-x: auto;
+    }
+
+    .me,
+    .other {
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        display: flex;
+        flex-direction: column;
+        padding: 10px 15px;
+        margin-bottom: 8px;
+    }
+
+    .author {
+        font-size: 12pt;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .messages .me {
+        align-self: flex-start;
+        background: lightgreen;
+    }
+
+    .messages .other {
+        align-self: flex-end;
+        background: coral;
+    }
+
+    .chat-area.blocked {
+        display: none;
+    }
+</style>
+
+<body>
+    <div class="main">
+        <div>
+            <form id="formEntrar">
+                <input type="text" name="name" id="name" placeholder="Insira seu nome">
+                <button id="btnEntrar">Entrar</button>
+            </form>
+        </div>
+        <div id="chatArea" class="chat-area blocked">
+            <div id="messages" class="messages">
+                <!-- <div class="me">
+                    <span class="author">gustavo</span>
+                    <span class="text">mensagem minha</span>
+                </div>
+                <span class="other">mensagem de outra pessoa</span> -->
+            </div>
+            <input type="text" name="message" id="inputMessage">
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/3.1.3/socket.io.min.js"
+        integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh"
+        crossorigin="anonymous"></script>
+
+    <script>
+        const URL_API = 'http://localhost:3000'
+        const socket = io(URL_API);
+
+        socket.on('connect', function () {
+            console.log('client connected');
+        });
+
+        const nameInput = document.querySelector('#name');
+        const btnEntrar = document.querySelector('#btnEntrar');
+        const formEntrar = document.querySelector('#formEntrar');
+        const chatArea = document.querySelector('#chatArea');
+        const messages = document.querySelector('#messages');
+        const inputMessage = document.querySelector('#inputMessage');
+
+        const headerDefault = { 'Content-type': 'application/json' };
+
+        formEntrar.addEventListener('submit', (event) => {
+            event.preventDefault();
+            entrar();
+        })
+
+        inputMessage.addEventListener('keyup', (event) => {
+            var key = event.which || event.keyCode;
+            const enterKeyCode = 13;
+
+            if (key == enterKeyCode) {
+                sendMessage(inputMessage.value);
+            }
+        })
+
+        function entrar() {
+            fetch(`${URL_API}/entrar`, {
+                method: 'POST', headers: headerDefault, body: JSON.stringify({
+                    name: nameInput.value,
+                    socketId: socket.id
+                })
+            })
+                .then(() => {
+                    nameInput.disabled = true;
+                    btnEntrar.style = 'display: none';
+                })
+                .catch(err => {
+                    alert(err);
+                });
+        }
+
+        function sendMessage(text) {
+            fetch(`${URL_API}/message`, {
+                method: 'POST', headers: headerDefault, body: JSON.stringify({
+                    text, username: nameInput.value
+                })
+            }).catch(err => {
+                alert(err);
+            });
+        }
+
+        function getMessages() {
+            fetch(`${URL_API}/message`, {
+                method: 'GET', headers: headerDefault
+            })
+                .then((response) => response.json())
+                .then((messages) => {
+                    for (const message of messages) {
+                        console.log(message);
+                        addNewMessage(message);
+                    }
+                })
+                .catch(err => {
+                    alert(err);
+                });
+        }
+
+        function addNewMessage(message) {
+            const { text, user } = message;
+
+            const itsMe = user.name == nameInput.value;
+
+            const newMessage = document.createElement('span');
+            newMessage.classList.add(itsMe ? 'me' : 'other');
+            newMessage.innerHTML = `
+            <span class="author">${user.name}</span>
+            <span class="text">${text}</span>
+            `;
+
+            messages.appendChild(newMessage);
+
+            inputMessage.value = '';
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        socket.on('enter-chat', (user) => {
+            
+            if (user.socketId == socket.id) {
+                chatArea.classList.remove('blocked');
+                getMessages();
+            }
+
+            inputMessage.focus();
+        });
+
+        socket.on('leave-chat', () => {
+            chatArea.classList.add('blocked');
+        });
+
+        socket.on('message', (message) => {
+            console.log('message', message);
+            addNewMessage(message);
+        })
+
+
+    </script>
+</body>
+
+</html>
