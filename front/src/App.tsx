@@ -8,32 +8,40 @@ type appMessage = {
   text: string;
 };
 
+type apiMessage = {
+  text: string;
+  user: { name: string; socketId: string };
+};
+
 function App() {
   const URL_API = "http://localhost:3333";
   const HEADER_DEFAULT = { "Content-type": "application/json" };
-  const socket = io(URL_API);
   const [userName, setUserName] = useState("");
+  const [socketId, setSocketId] = useState('');
   const [userNameDisable, setUserNameDisable] = useState(false);
   const [messageBlocked, setMessageBlocked] = useState(true);
   const [messages, setMessages] = useState<appMessage[]>([]);
   const [currentMessage, setCurrentMessage] = useState("");
-
+  
   useEffect(() => {
+    const socket =io(URL_API);
+    
     socket.on("connect", () => {
+      setSocketId(socket.id);
       console.log("client connected");
     });
 
     socket.on("enter-chat", (user) => {
+      console.log("enter-chat");
       if (user.socketId === socket.id) {
-        console.log('enter-chat');
-        
+
         setMessageBlocked(false);
         getMessages();
       }
     });
 
     socket.on("leave-chat", () => {
-      console.log('leave');
+      console.log("leave");
       setMessageBlocked(true);
     });
 
@@ -57,7 +65,7 @@ function App() {
 
     request("entrar", {
       name: userName,
-      socketId: socket.id,
+      socketId: socketId,
     }).then(() => {
       setUserNameDisable(true);
       setMessageBlocked(false);
@@ -77,22 +85,17 @@ function App() {
   const getMessages = () => {
     request("message", undefined, "GET")
       .then((data) => data.json())
-      .then((responseMessages: any[]) => {
-        const currentMessage: appMessage[] = [];
-        
+      .then((responseMessages: apiMessage[]) => {
+        console.log('message');
         for (const message of responseMessages) {
           const messageMapped = mapMessage(message);
-          currentMessage.push(messageMapped);
+          
+          setMessages((oldMessages) => [...oldMessages, messageMapped]);
         }
-
-        setMessages(currentMessage);
       });
   };
 
-  const mapMessage = (message: {
-    text: string;
-    user: { name: string };
-  }): appMessage => {
+  const mapMessage = (message: apiMessage): appMessage => {
     const { text, user } = message;
     const itsMe = user.name === userName;
 
@@ -105,7 +108,7 @@ function App() {
 
   const addNewMessage = (message: appMessage) => {
     console.log([...messages, message]);
-    
+
     setMessages((oldMessages) => [...oldMessages, message]);
   };
 
