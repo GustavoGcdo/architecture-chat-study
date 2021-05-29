@@ -106,7 +106,7 @@ function App() {
   const addNewMessage = (message: appMessage) => {
     console.log([...messages, message]);
     
-    setMessages([...messages, message]);
+    setMessages((oldMessages) => [...oldMessages, message]);
   };
 
   return (
