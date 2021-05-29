@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import io from "socket.io-client";
+import io, { Socket } from "socket.io-client";
 
 type appMessage = {
   classList: "me" | "other";
@@ -16,41 +17,48 @@ type apiMessage = {
 function App() {
   const URL_API = "http://localhost:3333";
   const HEADER_DEFAULT = { "Content-type": "application/json" };
+  const [socketId, setSocketId] = useState("");
   const [userName, setUserName] = useState("");
-  const [socketId, setSocketId] = useState('');
   const [userNameDisable, setUserNameDisable] = useState(false);
   const [messageBlocked, setMessageBlocked] = useState(true);
   const [messages, setMessages] = useState<appMessage[]>([]);
   const [currentMessage, setCurrentMessage] = useState("");
-  
+  const [socket, setSocket] = useState<Socket>();
+  const [userNameRef, setUserNameRef] = useState<HTMLInputElement | null>(null);
+
   useEffect(() => {
-    const socket =io(URL_API);
-    
-    socket.on("connect", () => {
-      setSocketId(socket.id);
+    const newSocket = io(URL_API);
+    setSocket(newSocket);
+
+    newSocket.on("connect", () => {
+      setSocketId(newSocket.id);
       console.log("client connected");
     });
 
-    socket.on("enter-chat", (user) => {
-      console.log("enter-chat");
-      if (user.socketId === socket.id) {
-
-        setMessageBlocked(false);
-        getMessages();
-      }
-    });
-
-    socket.on("leave-chat", () => {
+    newSocket.on("leave-chat", () => {
       console.log("leave");
       setMessageBlocked(true);
     });
-
-    socket.on("message", (message) => {
-      console.log("message");
-      const messageMapped = mapMessage(message);
-      addNewMessage(messageMapped);
-    });
   }, []);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("enter-chat", (user) => {
+        console.log("enter-chat");
+
+        if (user.socketId === socket.id) {
+          setMessageBlocked(false);
+          getMessages();
+        }
+      });
+
+      socket.on("message", (message) => {
+        console.log("message");
+        const messageMapped = mapMessage(message);
+        addNewMessage(messageMapped);
+      });
+    }
+  }, [socket]);
 
   const request = (uri: string, body: any, method = "POST") => {
     return fetch(`${URL_API}/${uri}`, {
@@ -62,14 +70,16 @@ function App() {
 
   const entrar = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    request("entrar", {
-      name: userName,
-      socketId: socketId,
-    }).then(() => {
-      setUserNameDisable(true);
-      setMessageBlocked(false);
-    });
+    if (userNameRef) {
+      setUserName(userNameRef.value);
+      request("entrar", {
+        name: userNameRef.value,
+        socketId: socketId,
+      }).then(() => {
+        setUserNameDisable(true);
+        setMessageBlocked(false);
+      });
+    }
   };
 
   const sendMessage = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -86,10 +96,9 @@ function App() {
     request("message", undefined, "GET")
       .then((data) => data.json())
       .then((responseMessages: apiMessage[]) => {
-        console.log('message');
         for (const message of responseMessages) {
           const messageMapped = mapMessage(message);
-          
+
           setMessages((oldMessages) => [...oldMessages, messageMapped]);
         }
       });
@@ -97,7 +106,8 @@ function App() {
 
   const mapMessage = (message: apiMessage): appMessage => {
     const { text, user } = message;
-    const itsMe = user.name === userName;
+
+    const itsMe = user.name === userNameRef?.value;
 
     return {
       classList: itsMe ? "me" : "other",
@@ -107,8 +117,6 @@ function App() {
   };
 
   const addNewMessage = (message: appMessage) => {
-    console.log([...messages, message]);
-
     setMessages((oldMessages) => [...oldMessages, message]);
   };
 
@@ -117,8 +125,8 @@ function App() {
       <div>
         <form onSubmit={entrar} id="formEntrar">
           <input
+            ref={(ref) => setUserNameRef(ref)}
             type="text"
-            onChange={(e) => setUserName(e.target.value)}
             disabled={userNameDisable}
           />
           {!userNameDisable && <button>Entrar</button>}
