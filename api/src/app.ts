@@ -3,48 +3,53 @@ import express, { Application } from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import { Message } from './models/message';
+import Login from './modules/auth/usecases/login';
 import userRepository from './repositories/user.repository';
 
 export default class App {
-  private app: Application;
-  private server: http.Server;
+  private app?: Application;
+  private server?: http.Server;
+  private static ioServer?: Server;
 
-  constructor() {
+  public create() {
     this.app = express();
     this.server = http.createServer(this.app);
-  }
-
-  public async create() {
-    const ioServer = this.createIoServer(this.server);
+    this.createIoServer();
     this.configureMiddleWares();
-    this.configureRoutes(ioServer);
+    this.configureRoutes();
   }
 
   private configureMiddleWares() {
-    this.app.use(express.json());
-    this.app.use(cors());
+    if (this.app) {
+      this.app.use(express.json());
+      this.app.use(cors());
+    } else {
+      throw new Error('The app was not created');
+    }
   }
 
-  private createIoServer(server: http.Server) {
-    const ioServer = new Server(server, {
+  private createIoServer() {
+    App.ioServer = new Server(this.server, {
       cors: {
         origin: '*'
       }
     });
 
-    ioServer.on('connection', (socket) => {
+    App.ioServer.on('connection', (socket) => {
       console.log('a user connected');
 
       socket.on('disconnect', () => {
         userRepository.remove(socket.id);
       });
     });
-
-    return ioServer;
   }
 
-  private configureRoutes(io: Server) {
+  private configureRoutes() {
     const messages: Message[] = [];
+
+    if (!this.app) {
+      throw new Error('The app or io was not created');
+    }
 
     this.app.get('/', (req, res) => {
       return res.json({
@@ -53,27 +58,27 @@ export default class App {
     });
 
     this.app.post('/entrar', (req, res) => {
-      const { name, socketId } = req.body;
+      try {
+        const login = new Login();
+        login.handle(req.body);
+      } catch ({ message }) {
+        console.log(message);
 
-      if (!name || name.trim().length === 0) {
-        return res.status(400).json('usuario invalido');
+        return res.status(400).json({ message });
       }
-
-      userRepository.add({ name, socketId });
-      io.emit('enter-chat', { name, socketId });
-
-      return res.status(200).json({
-        message: 'sucesso'
-      });
     });
 
     this.app.post('/message', (req, res) => {
+      if (!App.ioServer) {
+        throw new Error('The io server was not created');
+      }
+
       const { text, username } = req.body;
       const user = userRepository.findByUsername(username);
 
       if (text && text.trim().length > 0 && user) {
         messages.push({ text, user });
-        io.emit('message', { text, user });
+        App.ioServer.emit('message', { text, user });
       }
 
       return res.status(204).json();
@@ -85,8 +90,16 @@ export default class App {
   }
 
   public start() {
-    this.server.listen(3333, () => {
-      console.log('[app]: listening on port 3333');
-    });
+    if (this.server) {
+      this.server.listen(3333, () => {
+        console.log('[app]: listening on port 3333');
+      });
+    }
+
+    throw new Error('The server was not created');
+  }
+
+  public static getIoServer() {
+    return this.ioServer;
   }
 }
