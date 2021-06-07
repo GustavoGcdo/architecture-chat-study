@@ -86,7 +86,7 @@ function App() {
     if (e.key === "Enter")
       request("message", {
         text: currentMessage,
-        username: userName,
+        userName,
       }).then(() => {
         setCurrentMessage("");
       });
