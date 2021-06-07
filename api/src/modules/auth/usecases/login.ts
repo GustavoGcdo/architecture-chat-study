@@ -28,7 +28,7 @@ export default class Login implements IUseCase<void, UserLoginDto> {
       throw new Error('invalid user');
     }
 
-    if (!socketId || name.trim().length === 0) {
+    if (!socketId || socketId.trim().length === 0) {
       throw new Error('invalid socket id');
     }
 

@@ -2,8 +2,9 @@ import cors from 'cors';
 import express, { Application } from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
-import { Message } from './models/message';
 import Login from './modules/auth/usecases/login';
+import GetMessages from './modules/message/usecases/getMessages';
+import SendMessage from './modules/message/usecases/sendMessage';
 import userRepository from './repositories/user.repository';
 
 export default class App {
@@ -45,8 +46,6 @@ export default class App {
   }
 
   private configureRoutes() {
-    const messages: Message[] = [];
-
     if (!this.app) {
       throw new Error('The app or io was not created');
     }
@@ -61,6 +60,7 @@ export default class App {
       try {
         const login = new Login();
         login.handle(req.body);
+        return res.status(204).send();
       } catch ({ message }) {
         console.log(message);
 
@@ -69,23 +69,24 @@ export default class App {
     });
 
     this.app.post('/message', (req, res) => {
-      if (!App.ioServer) {
-        throw new Error('The io server was not created');
+      try {
+        const sendMessage = new SendMessage();
+        sendMessage.handle(req.body);
+        return res.status(204).json();
+      } catch ({ message }) {
+        return res.status(400).json({ message });
       }
-
-      const { text, username } = req.body;
-      const user = userRepository.findByUsername(username);
-
-      if (text && text.trim().length > 0 && user) {
-        messages.push({ text, user });
-        App.ioServer.emit('message', { text, user });
-      }
-
-      return res.status(204).json();
     });
 
     this.app.get('/message', (req, res) => {
-      return res.status(200).json(messages);
+      try {
+        const getMessages = new GetMessages();
+        const messages = getMessages.handle();
+
+        return res.status(200).json(messages);
+      } catch ({ message }) {
+        return res.status(400).json({ message });
+      }
     });
   }
 

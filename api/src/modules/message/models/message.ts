@@ -1,4 +1,4 @@
-import { User } from './user';
+import { User } from '../../../models/user';
 
 export interface Message {
   text: string;
