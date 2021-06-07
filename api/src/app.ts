@@ -94,9 +94,9 @@ export default class App {
       this.server.listen(3333, () => {
         console.log('[app]: listening on port 3333');
       });
+    } else {
+      throw new Error('The server was not created');
     }
-
-    throw new Error('The server was not created');
   }
 
   public static getIoServer() {
