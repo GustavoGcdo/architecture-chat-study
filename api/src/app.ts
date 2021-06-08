@@ -3,6 +3,7 @@ import express, { Application } from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import makeAuthRoute from './factories/routes/auth-route.factory';
+import makeMessageRoute from './factories/routes/message-route.factory';
 import Login from './modules/auth/usecases/login';
 import GetMessages from './modules/message/usecases/getMessages';
 import SendMessage from './modules/message/usecases/sendMessage';
@@ -58,27 +59,7 @@ export default class App {
     });
 
     this.app.use(makeAuthRoute().getRouter());
-
-    this.app.post('/message', (req, res) => {
-      try {
-        const sendMessage = new SendMessage();
-        sendMessage.handle(req.body);
-        return res.status(204).json();
-      } catch ({ message }) {
-        return res.status(400).json({ message });
-      }
-    });
-
-    this.app.get('/message', (req, res) => {
-      try {
-        const getMessages = new GetMessages();
-        const messages = getMessages.handle();
-
-        return res.status(200).json(messages);
-      } catch ({ message }) {
-        return res.status(400).json({ message });
-      }
-    });
+    this.app.use(makeMessageRoute().getRouter());
   }
 
   public start() {

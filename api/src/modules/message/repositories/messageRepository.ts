@@ -13,7 +13,6 @@ class MessageRepository {
 
   newMessage(message: Message) {
     this.messages.push(message);
-    console.log(this.messages);
   }
 }
 
