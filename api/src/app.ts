@@ -2,6 +2,7 @@ import cors from 'cors';
 import express, { Application } from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
+import makeAuthRoute from './factories/routes/auth-route.factory';
 import Login from './modules/auth/usecases/login';
 import GetMessages from './modules/message/usecases/getMessages';
 import SendMessage from './modules/message/usecases/sendMessage';
@@ -56,17 +57,7 @@ export default class App {
       });
     });
 
-    this.app.post('/entrar', (req, res) => {
-      try {
-        const login = new Login();
-        login.handle(req.body);
-        return res.status(204).send();
-      } catch ({ message }) {
-        console.log(message);
-
-        return res.status(400).json({ message });
-      }
-    });
+    this.app.use(makeAuthRoute().getRouter());
 
     this.app.post('/message', (req, res) => {
       try {
