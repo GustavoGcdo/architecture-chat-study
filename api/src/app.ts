@@ -5,7 +5,7 @@ import { Server } from 'socket.io';
 import Login from './modules/auth/usecases/login';
 import GetMessages from './modules/message/usecases/getMessages';
 import SendMessage from './modules/message/usecases/sendMessage';
-import userRepository from './repositories/user.repository';
+import userRepository from './modules/_shared/repositories/user.repository';
 
 export default class App {
   private app?: Application;
