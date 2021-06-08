@@ -14,6 +14,11 @@ type apiMessage = {
   user: { name: string; socketId: string };
 };
 
+type apiReturn = {
+  data: apiMessage[];
+  message: string;
+};
+
 function App() {
   const URL_API = "http://localhost:3333";
   const HEADER_DEFAULT = { "Content-type": "application/json" };
@@ -95,8 +100,8 @@ function App() {
   const getMessages = () => {
     request("message", undefined, "GET")
       .then((data) => data.json())
-      .then((responseMessages: apiMessage[]) => {
-        for (const message of responseMessages) {
+      .then((responseMessages: apiReturn) => {
+        for (const message of responseMessages.data) {
           const messageMapped = mapMessage(message);
 
           setMessages((oldMessages) => [...oldMessages, messageMapped]);
