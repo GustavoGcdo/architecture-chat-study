@@ -2,7 +2,7 @@ import { GetMessagesController } from '../../presentation/controllers/message/ge
 import { SendMessageController } from '../../presentation/controllers/message/send-message.controller';
 import { MessageRoute } from '../../presentation/routes/message';
 
-export default function makeMessageRoute(): MessageRoute {
+export function makeMessageRoute(): MessageRoute {
   const sendMessageController = new SendMessageController();
   const getMessageController = new GetMessagesController();
 
