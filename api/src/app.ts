@@ -53,6 +53,10 @@ export default class App {
     });
   }
 
+  public getApp() {
+    return this.app;
+  }
+
   public static getIoServer() {
     return this.ioServer;
   }
