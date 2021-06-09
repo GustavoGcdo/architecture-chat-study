@@ -6,10 +6,16 @@ import { Message } from '../../../modules/message/models/message';
 import GetMessages from '../../../modules/message/usecases/getMessages';
 
 export class GetMessagesController extends BaseController {
+  private _getMessages: GetMessages;
+
+  constructor(getMessages: GetMessages) {
+    super();
+    this._getMessages = getMessages;
+  }
+
   public execute(request: HttpRequest): Promise<HttpResponse> {
     try {
-      const getMessages = new GetMessages();
-      const messages = getMessages.handle();
+      const messages = this._getMessages.handle();
 
       const response = new Result<Message[]>(messages);
       return Promise.resolve(HandleResponse.success(response));

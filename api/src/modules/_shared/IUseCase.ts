@@ -1,4 +1,4 @@
-interface IUseCase<T = any, J = any> {
+interface IUseCase<J = any, T = any> {
   handle(dto: J): T | Promise<T>;
 }
 

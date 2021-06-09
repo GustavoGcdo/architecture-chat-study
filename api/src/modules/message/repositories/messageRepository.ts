@@ -1,13 +1,14 @@
 import { Message } from '../models/message';
+import IMessageRepository from './messageRepository.interface';
 
-class MessageRepository {
+class MessageRepository implements IMessageRepository {
   private messages: Message[];
 
   constructor() {
     this.messages = [];
   }
 
-  get() {
+  get(): Message[] {
     return this.messages;
   }
 

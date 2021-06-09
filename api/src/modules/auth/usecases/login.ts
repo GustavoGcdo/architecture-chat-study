@@ -2,13 +2,9 @@ import { Server } from 'socket.io';
 import App from '../../../app';
 import userRepository from '../../_shared/repositories/user.repository';
 import IUseCase from '../../_shared/IUseCase';
+import UserLoginDto from '../dtos/UserLoginDto';
 
-export interface UserLoginDto {
-  name: string;
-  socketId: string;
-}
-
-export default class Login implements IUseCase<void, UserLoginDto> {
+export default class Login implements IUseCase<UserLoginDto, void> {
   private io: Server;
 
   constructor() {

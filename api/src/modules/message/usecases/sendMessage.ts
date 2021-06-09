@@ -3,12 +3,13 @@ import App from '../../../app';
 import userRepository from '../../_shared/repositories/user.repository';
 import IUseCase from '../../_shared/IUseCase';
 import MessageDto from '../dtos/MessageDto';
-import messageRepository from '../repositories/messageRepository';
+import IMessageRepository from '../repositories/messageRepository.interface';
 
-export default class SendMessage implements IUseCase {
+export default class SendMessage implements IUseCase<MessageDto, void> {
   private io: Server;
+  private messageRepository: IMessageRepository;
 
-  constructor() {
+  constructor(messageRepository: IMessageRepository) {
     const io = App.getIoServer();
 
     if (!io) {
@@ -16,6 +17,7 @@ export default class SendMessage implements IUseCase {
     }
 
     this.io = io;
+    this.messageRepository = messageRepository;
   }
 
   handle(dto: MessageDto) {
@@ -23,7 +25,7 @@ export default class SendMessage implements IUseCase {
     const user = userRepository.findByUsername(userName);
 
     if (text && text.trim().length > 0 && user) {
-      messageRepository.newMessage({
+      this.messageRepository.newMessage({
         text,
         user
       });
