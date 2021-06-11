@@ -1,4 +1,5 @@
 import messageRepository from '../../modules/message/repositories/messageRepository';
+import MessageDeliveryService from '../../modules/message/services/messageDelivery';
 import GetMessages from '../../modules/message/usecases/getMessages';
 import SendMessage from '../../modules/message/usecases/sendMessage';
 import { GetMessagesController } from '../../presentation/controllers/message/get-messages.controller';
@@ -7,7 +8,11 @@ import { MessageRoute } from '../../presentation/routes/message';
 
 export function makeMessageRoute(): MessageRoute {
   const getMessages = new GetMessages(messageRepository);
-  const sendMessage = new SendMessage(messageRepository);
+  const messageDeliveryService = new MessageDeliveryService();
+  const sendMessage = new SendMessage(
+    messageRepository,
+    messageDeliveryService
+  );
 
   const sendMessageController = new SendMessageController(sendMessage);
   const getMessageController = new GetMessagesController(getMessages);

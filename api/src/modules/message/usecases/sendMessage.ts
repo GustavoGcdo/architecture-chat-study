@@ -4,19 +4,17 @@ import userRepository from '../../_shared/repositories/user.repository';
 import IUseCase from '../../_shared/IUseCase';
 import MessageDto from '../dtos/MessageDto';
 import IMessageRepository from '../repositories/messageRepository.interface';
+import IMessageDeliveryService from '../services/messageDelivery.interface';
 
 export default class SendMessage implements IUseCase<MessageDto, void> {
-  private io: Server;
+  private messageDeliveryService: IMessageDeliveryService;
   private messageRepository: IMessageRepository;
 
-  constructor(messageRepository: IMessageRepository) {
-    const io = App.getIoServer();
-
-    if (!io) {
-      throw new Error('Io server is undefined');
-    }
-
-    this.io = io;
+  constructor(
+    messageRepository: IMessageRepository,
+    messageDeliveryService: IMessageDeliveryService
+  ) {
+    this.messageDeliveryService = messageDeliveryService;
     this.messageRepository = messageRepository;
   }
 
@@ -29,7 +27,7 @@ export default class SendMessage implements IUseCase<MessageDto, void> {
         text,
         user
       });
-      this.io.emit('message', { text, user });
+      this.messageDeliveryService.deliver({ text, user });
     }
   }
 }
