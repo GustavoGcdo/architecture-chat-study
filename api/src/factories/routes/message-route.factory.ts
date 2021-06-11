@@ -1,22 +1,10 @@
-import messageRepository from '../../modules/message/repositories/messageRepository';
-import MessageDeliveryService from '../../modules/message/services/messageDelivery';
-import GetMessages from '../../modules/message/usecases/getMessages';
-import SendMessage from '../../modules/message/usecases/sendMessage';
-import { GetMessagesController } from '../../presentation/controllers/message/get-messages.controller';
-import { SendMessageController } from '../../presentation/controllers/message/send-message.controller';
 import { MessageRoute } from '../../presentation/routes/message';
+import { makeGetMessageController } from '../controllers/getMessageController.factory';
+import { makeSendMessageController } from '../controllers/sendMessageController.factory';
 
 export function makeMessageRoute(): MessageRoute {
-  const getMessages = new GetMessages(messageRepository);
-  const messageDeliveryService = new MessageDeliveryService();
-  const sendMessage = new SendMessage(
-    messageRepository,
-    messageDeliveryService
-  );
+  const getMessageController = makeGetMessageController();
+  const sendMessageController = makeSendMessageController();
 
-  const sendMessageController = new SendMessageController(sendMessage);
-  const getMessageController = new GetMessagesController(getMessages);
-
-  const route = new MessageRoute(sendMessageController, getMessageController);
-  return route;
+  return new MessageRoute(sendMessageController, getMessageController);
 }
