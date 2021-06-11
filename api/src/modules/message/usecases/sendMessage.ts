@@ -1,7 +1,5 @@
-import { Server } from 'socket.io';
-import App from '../../../app';
-import userRepository from '../../_shared/repositories/user.repository';
 import IUseCase from '../../_shared/IUseCase';
+import userRepository from '../../_shared/repositories/user.repository';
 import MessageDto from '../dtos/MessageDto';
 import IMessageRepository from '../repositories/messageRepository.interface';
 import IMessageDeliveryService from '../services/messageDelivery.interface';
