@@ -1,3 +1,5 @@
+import { Result } from '../result';
+
 export interface HttpRequest {
   params?: any;
   body?: any;
@@ -7,5 +9,5 @@ export interface HttpRequest {
 
 export interface HttpResponse {
   status: number;
-  body: any;
+  body: Result<any>;
 }

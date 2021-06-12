@@ -1,34 +1,25 @@
-import { Server } from 'socket.io';
-import App from '../../../app';
-import userRepository from '../../_shared/repositories/user.repository';
+import { Either, left, right } from '../../../infra/result';
 import IUseCase from '../../_shared/IUseCase';
+import userRepository from '../../_shared/repositories/user.repository';
 import UserLoginDto from '../dtos/UserLoginDto';
+import InvalidUserError from '../errors/invalidUser.error';
 
-export default class Login implements IUseCase<UserLoginDto, void> {
-  private io: Server;
+type response = Either<InvalidUserError, void>;
 
-  constructor() {
-    const io = App.getIoServer();
-
-    if (io) {
-      this.io = io;
-    } else {
-      throw new Error('io server is undefined');
-    }
-  }
-
-  public handle(dto: UserLoginDto): void {
+export default class Login implements IUseCase<UserLoginDto, response> {
+  handle(dto: UserLoginDto): response {
     const { name, socketId } = dto;
+    const errors: Error[] = [];
 
     if (!name || name.trim().length === 0) {
-      throw new Error('invalid user');
+      return left(new InvalidUserError('Invalid user name'));
     }
 
     if (!socketId || socketId.trim().length === 0) {
-      throw new Error('invalid socket id');
+      return left(new InvalidUserError('Invalid socket id'));
     }
 
     userRepository.add({ name, socketId });
-    this.io.emit('enter-chat', { name, socketId });
+    return right(undefined);
   }
 }
