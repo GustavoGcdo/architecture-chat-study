@@ -1,6 +1,7 @@
 import { User } from '../models/user';
+import IUserRepository from './userRepository.interface';
 
-class UserRepository {
+class UserRepository implements IUserRepository {
   private users: User[];
 
   constructor() {
@@ -11,8 +12,8 @@ class UserRepository {
     this.users.push(user);
   }
 
-  findByUsername(userName: string) {
-    return this.users.find((u) => (u.name = userName));
+  findByUsername(userName: string): User | undefined {
+    return this.users.find((u) => u.name === userName);
   }
 
   remove(socketId: string) {
