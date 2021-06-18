@@ -4,8 +4,6 @@ import IEmailService from './emailService.interface';
 
 export class EmailService implements IEmailService {
   async send(to: string, subject: string, body: string): Promise<void> {
-    console.log(configs);
-
     const mailOptions = {
       from: configs.EMAIL_SMTP_FROM,
       to: to,
