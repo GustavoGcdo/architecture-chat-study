@@ -98,8 +98,6 @@ describe('Use case Send message', () => {
 
     const result = sendMessageUseCase.handle(validMessage);
 
-    console.log(result.value);
-
     expect(result.isLeft()).toBeDefined();
     expect(result.isLeft()).toBeTruthy();
   });
@@ -122,8 +120,6 @@ describe('Use case Send message', () => {
     };
 
     const result = sendMessageUseCase.handle(validMessage);
-
-    console.log(result.value);
 
     expect(result.isLeft()).toBeDefined();
     expect(result.isLeft()).toBeTruthy();
