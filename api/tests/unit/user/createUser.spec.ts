@@ -34,7 +34,7 @@ describe('Use case create new user', () => {
     const validUser = {
       completeName: 'Thiago Augusto Gonçalves Silva',
       displayName: 'Thiago Augusto',
-      birthDate: new Date('2000-07-06'),
+      birthDate: '2000-07-06',
       email: 'thiagoggth@gmail.com',
       password: 'passwordFort',
       userName: 'thiagoggth'
@@ -57,7 +57,7 @@ describe('Use case create new user', () => {
     expect(resultToTest.completeName).toStrictEqual(validUser.completeName);
     expect(resultToTest.password).not.toEqual(validUser.password);
     expect(resultToTest.birthDate.toISOString()).toStrictEqual(
-      validUser.birthDate.toISOString()
+      new Date(validUser.birthDate).toISOString()
     );
     expect(resultToTest.displayName).toStrictEqual(validUser.displayName);
     expect(resultToTest.userName).toStrictEqual(validUser.userName);
@@ -67,7 +67,7 @@ describe('Use case create new user', () => {
     const validUser = {
       completeName: 'Thiago Augusto',
       displayName: 'Thiago Augusto',
-      birthDate: new Date('2000-07-06'),
+      birthDate: '2000-07-06',
       email: 'thiagoggthgmail.com',
       password: 'passwordFort',
       userName: 'thiagoggth'
@@ -86,7 +86,7 @@ describe('Use case create new user', () => {
     const validUser = {
       completeName: 'Thiago Augusto',
       displayName: 'Thiago Augusto',
-      birthDate: new Date('2000-07-06'),
+      birthDate: '2000-07-06',
       email: '  ',
       password: 'passwordFort',
       userName: 'thiagoggth'
@@ -108,7 +108,7 @@ describe('Use case create new user', () => {
     const validUser = {
       completeName: '  ',
       displayName: 'Thiago Augusto',
-      birthDate: new Date('2000-07-06'),
+      birthDate: '2000-07-06',
       email: 'thiagoggth@gmail.com',
       password: 'passwordFort',
       userName: 'thiagoggth'
@@ -127,7 +127,7 @@ describe('Use case create new user', () => {
     const validUser = {
       completeName: 'Thiago Augusto',
       displayName: 'Thiago Augusto',
-      birthDate: new Date('2000-07-06'),
+      birthDate: '2000-07-06',
       email: 'thiagoggth@gmail.com',
       password: '  ',
       userName: 'thiagoggth'
@@ -146,7 +146,7 @@ describe('Use case create new user', () => {
     const validUser = {
       completeName: 'Thiago Augusto',
       displayName: 'Thiago Augusto',
-      birthDate: new Date('2000-07-06'),
+      birthDate: '2000-07-06',
       email: 'thiagoggth@gmail.com',
       password: 'senhaForte',
       userName: '  '
@@ -168,7 +168,7 @@ describe('Use case create new user', () => {
     const validUser = {
       completeName: 'Thiago Augusto',
       displayName: 'Thiago Augusto',
-      birthDate: new Date('2000-07-06'),
+      birthDate: '2000-07-06',
       email: 'thiagoggth@gmail.com',
       password: 'senhaForte',
       userName: 'username mas'
@@ -198,7 +198,7 @@ describe('Use case create new user', () => {
     const validUser = {
       completeName: 'Thiago Augusto',
       displayName: 'Thiago Augusto',
-      birthDate: new Date('2000-07-06'),
+      birthDate: '2000-07-06',
       email: 'thiagoggth@gmail.com',
       password: 'senhaForte',
       userName: 'username'
@@ -230,7 +230,7 @@ describe('Use case create new user', () => {
     const validUser = {
       completeName: 'Thiago Augusto',
       displayName: 'Thiago Augusto',
-      birthDate: new Date('2000-07-06'),
+      birthDate: '2000-07-06',
       email: 'thiagoggth@gmail.com',
       password: 'senhaForte',
       userName: 'username'
