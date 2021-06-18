@@ -3,7 +3,7 @@ import { HttpStatus } from './adapters/http-status.enum';
 import { Result } from './result';
 
 export abstract class HandleResponse {
-  public static create(result: Result<unknown>): HttpResponse {
+  public static created(result: Result<unknown>): HttpResponse {
     return {
       status: HttpStatus.CREATED,
       body: result

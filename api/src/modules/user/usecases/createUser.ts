@@ -4,6 +4,7 @@ import IUseCase from '../../_shared/IUseCase';
 import IEmailService from '../../_shared/services/emailService.interface';
 import CreateUserDto from '../dtos/createUserDto';
 import InvalidValuesError from '../errors/invalidValues.error';
+import { UserMapper } from '../mappers/userMapper';
 import User from '../models/user';
 import IUserRepository from '../repositories/userRepository.interface';
 
@@ -32,7 +33,9 @@ class CreateUser implements IUseCase {
 
     dto.password = await this.encryptService.encrypt(dto.password);
 
-    const newUser = this.userRepository.create(dto);
+    const newUser = this.userRepository.create(
+      UserMapper.createDtoToModel(dto)
+    );
     this.sendValidationEmail(newUser);
     return right(newUser);
   }
@@ -42,6 +45,7 @@ class CreateUser implements IUseCase {
     const resultEmail = this.validateEmail(dto.email);
     const resultUserName = this.validateUserName(dto.userName);
     const resultUserExists = this.validateUserExists(dto.userName, dto.email);
+    const resultValidateBirthDate = this.validateBirthDate(dto.birthDate);
 
     let errors: string[] = [];
 
@@ -56,6 +60,9 @@ class CreateUser implements IUseCase {
     }
     if (resultUserName.isLeft()) {
       errors.push(resultUserName.value);
+    }
+    if (resultValidateBirthDate.isLeft()) {
+      errors.push(resultValidateBirthDate.value);
     }
     if (errors.length > 0) {
       return left(new InvalidValuesError(errors));
@@ -147,6 +154,14 @@ class CreateUser implements IUseCase {
       'Confirmação de e-mail',
       'Seu código de confirmação é: 3300 valido por 30 min'
     );
+  }
+
+  private validateBirthDate(dateString: string): Either<string, Date> {
+    const date = new Date(dateString);
+    if (typeof date === 'string') {
+      return left(date);
+    }
+    return right(date);
   }
 }
 

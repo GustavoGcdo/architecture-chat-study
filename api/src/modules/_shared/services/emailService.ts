@@ -4,6 +4,8 @@ import IEmailService from './emailService.interface';
 
 export class EmailService implements IEmailService {
   async send(to: string, subject: string, body: string): Promise<void> {
+    console.log(emailConfig);
+
     const mailOptions = {
       from: emailConfig.from,
       to: to,
@@ -13,7 +15,7 @@ export class EmailService implements IEmailService {
 
     const transporter = nodemailer.createTransport({
       host: emailConfig.host,
-      port: emailConfig.port,
+      port: Number(emailConfig.port),
       secure: false,
       auth: {
         user: emailConfig.user,

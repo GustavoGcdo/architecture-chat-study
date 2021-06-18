@@ -4,7 +4,7 @@ interface CreateUserDto {
   email: string;
   password: string;
   userName: string;
-  birthDate: Date;
+  birthDate: string;
 }
 
 export default CreateUserDto;

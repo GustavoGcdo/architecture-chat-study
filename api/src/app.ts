@@ -2,10 +2,13 @@ import cors from 'cors';
 import express, { Application } from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
+import dotenvConfig from './configs/dotenv.config';
 import makeAuthRoute from './factories/routes/auth-route.factory';
 import makeInfoRoute from './factories/routes/info-route.factory';
 import { makeMessageRoute } from './factories/routes/message-route.factory';
+import makeUserRoute from './factories/routes/user-route.factory';
 import userRepository from './modules/_shared/repositories/user.repository';
+dotenvConfig();
 
 export default class App {
   private app: Application;
@@ -45,6 +48,7 @@ export default class App {
     this.app.use(makeInfoRoute().getRouter());
     this.app.use(makeAuthRoute().getRouter());
     this.app.use(makeMessageRoute().getRouter());
+    this.app.use(makeUserRoute().getRouter());
   }
 
   public start() {
