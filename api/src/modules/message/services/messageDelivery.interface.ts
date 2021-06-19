@@ -1,7 +1,7 @@
-import { Message } from '../models/message';
+export type MessageToSend = { text: string; user: string };
 
 interface IMessageDeliveryService {
-  deliver(message: Message): void;
+  deliver(message: MessageToSend): void;
 }
 
 export default IMessageDeliveryService;

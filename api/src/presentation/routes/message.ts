@@ -1,8 +1,9 @@
 import { Router } from 'express';
 import { Route } from '../../infra/route';
 import { adaptRoute } from '../adapters/express-route-adapter';
-import { SendMessageController } from '../controllers/message/send-message.controller';
 import { GetMessagesController } from '../controllers/message/get-messages.controller';
+import { SendMessageController } from '../controllers/message/send-message.controller';
+import authMiddleware from '../middlewares/auth.middleware';
 
 export class MessageRoute implements Route {
   private _sendMessageController: SendMessageController;
@@ -19,8 +20,16 @@ export class MessageRoute implements Route {
   }
 
   getRouter(): Router {
-    this._router.post('/message', adaptRoute(this._sendMessageController));
-    this._router.get('/message', adaptRoute(this._getMessagesController));
+    this._router.post(
+      '/message',
+      authMiddleware.authorize,
+      adaptRoute(this._sendMessageController)
+    );
+    this._router.get(
+      '/message',
+      authMiddleware.authorize,
+      adaptRoute(this._getMessagesController)
+    );
     return this._router;
   }
 }

@@ -1,7 +1,8 @@
 import { Server } from 'socket.io';
 import App from '../../../app';
-import { Message } from '../models/message';
-import IMessageDeliveryService from './messageDelivery.interface';
+import IMessageDeliveryService, {
+  MessageToSend
+} from './messageDelivery.interface';
 
 class MessageDeliveryService implements IMessageDeliveryService {
   private io: Server;
@@ -16,7 +17,7 @@ class MessageDeliveryService implements IMessageDeliveryService {
     }
   }
 
-  deliver(message: Message): void {
+  deliver(message: MessageToSend): void {
     this.io.emit('message', message);
   }
 }

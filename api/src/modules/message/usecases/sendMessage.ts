@@ -41,12 +41,19 @@ export default class SendMessage implements IUseCase<MessageDto, void> {
     if (validateResult.isRight()) {
       const { text, user } = validateResult.value;
 
+      if (!user.id) {
+        throw new Error('Send message: Internal server error');
+      }
+
       this.messageRepository.newMessage({
         text,
-        user
+        userId: user.id
       });
 
-      this.messageDeliveryService.deliver({ text, user });
+      this.messageDeliveryService.deliver({
+        text,
+        user: user.displayName || user.completeName
+      });
       return right(undefined);
     }
 
