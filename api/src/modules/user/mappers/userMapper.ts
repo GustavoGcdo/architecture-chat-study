@@ -1,4 +1,5 @@
 import CreateUserDto from '../dtos/createUserDto';
+import ReturnUserDto from '../dtos/returnUserDto';
 import User from '../models/user';
 import UserSchema from '../schemes/userSchema';
 
@@ -49,6 +50,24 @@ export abstract class UserMapper {
       userName: user.userName,
       displayName: user.displayName,
       createdAt: new Date()
+    };
+
+    return mapped;
+  }
+
+  public static modelToReturnUserDto(user: User): ReturnUserDto {
+    const mapped: ReturnUserDto = {
+      id: user.id,
+      emailChecked: false,
+      email: user.email,
+      birthDate: new Date(user.birthDate),
+      completeName: user.completeName,
+      userName: user.userName,
+      displayName: user.displayName,
+      createdAt: user.createdAt,
+      createdBy: user.createdBy,
+      updatedAt: user.updatedAt,
+      updatedBy: user.updatedBy
     };
 
     return mapped;

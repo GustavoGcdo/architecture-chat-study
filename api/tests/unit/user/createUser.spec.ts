@@ -48,14 +48,16 @@ describe('Use case create new user', () => {
 
     const resultToTest = result.value as User;
 
+    console.log(resultToTest);
+
     expect(result.isRight()).toBeDefined();
     expect(result.isRight()).toBeTruthy();
+    expect(resultToTest.password).not.toBeDefined();
     expect(jestSpyEncryptMethod).toHaveBeenCalled();
     expect(resultToTest.id).toBeDefined();
     expect(resultToTest.createdAt).toBeDefined();
     expect(resultToTest.email).toStrictEqual(validUser.email);
     expect(resultToTest.completeName).toStrictEqual(validUser.completeName);
-    expect(resultToTest.password).not.toEqual(validUser.password);
     expect(resultToTest.birthDate.toISOString()).toStrictEqual(
       new Date(validUser.birthDate).toISOString()
     );

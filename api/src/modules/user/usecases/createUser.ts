@@ -3,12 +3,13 @@ import IEncryptService from '../../auth/service/encryptService.interface';
 import IUseCase from '../../_shared/IUseCase';
 import IEmailService from '../../_shared/services/emailService.interface';
 import CreateUserDto from '../dtos/createUserDto';
+import ReturnUserDto from '../dtos/returnUserDto';
 import InvalidValuesError from '../errors/invalidValues.error';
 import { UserMapper } from '../mappers/userMapper';
 import User from '../models/user';
 import IUserRepository from '../repositories/userRepository.interface';
 
-type handleReturn = Either<InvalidValuesError, User>;
+type HandleReturn = Either<InvalidValuesError, ReturnUserDto>;
 
 class CreateUser implements IUseCase {
   private userRepository: IUserRepository;
@@ -25,7 +26,7 @@ class CreateUser implements IUseCase {
     this.emailService = emailService;
   }
 
-  async handle(dto: CreateUserDto): Promise<handleReturn> {
+  async handle(dto: CreateUserDto): Promise<HandleReturn> {
     const result = this.validate(dto);
     if (result.isLeft()) {
       return left(result.value);
@@ -37,7 +38,8 @@ class CreateUser implements IUseCase {
       UserMapper.createDtoToModel(dto)
     );
     this.sendValidationEmail(newUser);
-    return right(newUser);
+    const userToReturn = UserMapper.modelToReturnUserDto(newUser);
+    return right(userToReturn);
   }
 
   private validate(dto: CreateUserDto): Either<InvalidValuesError, void> {
