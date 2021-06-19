@@ -1,9 +1,9 @@
 import { mock } from 'jest-mock-extended';
 import IEncryptService from '../../../src/modules/auth/service/encryptService.interface';
-import InvalidValuesError from '../../../src/modules/user/errors/invalidValues.error';
 import User from '../../../src/modules/user/models/user';
 import IUserRepository from '../../../src/modules/user/repositories/userRepository.interface';
 import CreateUser from '../../../src/modules/user/usecases/createUser';
+import InvalidValuesError from '../../../src/modules/_shared/errors/invalidValues.error';
 import IEmailService from '../../../src/modules/_shared/services/emailService.interface';
 
 describe('Use case create new user', () => {
@@ -47,8 +47,6 @@ describe('Use case create new user', () => {
     }
 
     const resultToTest = result.value as User;
-
-    console.log(resultToTest);
 
     expect(result.isRight()).toBeDefined();
     expect(result.isRight()).toBeTruthy();

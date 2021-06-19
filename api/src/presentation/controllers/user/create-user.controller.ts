@@ -3,7 +3,7 @@ import { HttpStatus } from '../../../infra/adapters/http-status.enum';
 import { BaseController } from '../../../infra/base-controller';
 import { HandleResponse } from '../../../infra/handle-response';
 import { Result } from '../../../infra/result';
-import User from '../../../modules/user/models/user';
+import ReturnUserDto from '../../../modules/user/dtos/returnUserDto';
 import CreateUser from '../../../modules/user/usecases/createUser';
 
 class CreateUserController extends BaseController {
@@ -18,13 +18,16 @@ class CreateUserController extends BaseController {
     try {
       const createdUserResult = await this.createUser.handle(request.body);
       if (createdUserResult.isRight()) {
-        const response = new Result<User>(createdUserResult.value);
+        const response = new Result<ReturnUserDto>(createdUserResult.value);
         return HandleResponse.created(response);
       }
 
-      const response = new Result<{ errors: string[] }>({
-        errors: createdUserResult.value.getErros()
-      });
+      const response = new Result<null>(
+        null,
+        undefined,
+        false,
+        createdUserResult.value.getErros()
+      );
 
       return {
         body: response,

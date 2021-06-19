@@ -13,7 +13,7 @@ export class AuthRoute implements Route {
   }
 
   getRouter(): Router {
-    this._router.post('/entrar', adaptRoute(this._controller));
+    this._router.post('/login', adaptRoute(this._controller));
 
     return this._router;
   }

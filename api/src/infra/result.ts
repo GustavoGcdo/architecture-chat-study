@@ -2,13 +2,13 @@ export class Result<T> {
   data: T;
   message?: string;
   success: boolean;
-  error?: string;
+  errors?: string[];
 
-  constructor(data: T, message?: string, success = true, error?: string) {
+  constructor(data: T, message?: string, success = true, errors?: string[]) {
     this.data = data;
     this.message = message;
     this.success = success;
-    this.error = error;
+    this.errors = errors;
   }
 }
 

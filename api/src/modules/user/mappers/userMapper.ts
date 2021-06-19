@@ -22,7 +22,7 @@ export abstract class UserMapper {
   }
 
   public static schemaToModel(user: UserSchema): User {
-    const mapped: UserSchema = {
+    const mapped: User = {
       id: user.id,
       emailChecked: user.emailChecked,
       email: user.email,

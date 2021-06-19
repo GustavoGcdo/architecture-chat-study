@@ -1,10 +1,10 @@
 import { Either, left, right } from '../../../infra/result';
 import IEncryptService from '../../auth/service/encryptService.interface';
+import InvalidValuesError from '../../_shared/errors/invalidValues.error';
 import IUseCase from '../../_shared/IUseCase';
 import IEmailService from '../../_shared/services/emailService.interface';
 import CreateUserDto from '../dtos/createUserDto';
 import ReturnUserDto from '../dtos/returnUserDto';
-import InvalidValuesError from '../errors/invalidValues.error';
 import { UserMapper } from '../mappers/userMapper';
 import User from '../models/user';
 import IUserRepository from '../repositories/userRepository.interface';

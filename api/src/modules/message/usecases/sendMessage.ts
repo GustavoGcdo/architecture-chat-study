@@ -1,7 +1,7 @@
 import { Either, left, right } from '../../../infra/result';
+import User from '../../user/models/user';
+import IUserRepository from '../../user/repositories/userRepository.interface';
 import IUseCase from '../../_shared/IUseCase';
-import { User } from '../../_shared/models/user';
-import IUserRepository from '../../_shared/repositories/userRepository.interface';
 import MessageDto from '../dtos/MessageDto';
 import InvalidMessageError from '../errors/invalidMessage.error';
 import InvalidUserNameError from '../errors/invalidUserName.error';

@@ -20,28 +20,35 @@ export abstract class HandleResponse {
   public static notFound(error: string): HttpResponse {
     return {
       status: HttpStatus.NOT_FOUND,
-      body: new Result(null, '', false, error)
+      body: new Result(null, '', false, [error])
+    };
+  }
+
+  public static accessForbidden(error: string): HttpResponse {
+    return {
+      status: HttpStatus.ACCESS_FORBIDDEN,
+      body: new Result(null, '', false, [error])
     };
   }
 
   public static conflict(error: string): HttpResponse {
     return {
       status: HttpStatus.CONFLICT,
-      body: new Result(null, '', false, error)
+      body: new Result(null, '', false, [error])
     };
   }
 
   public static unexpectedError(error: string): HttpResponse {
     return {
       status: HttpStatus.INTERNAL_ERROR,
-      body: new Result(null, '', false, error)
+      body: new Result(null, '', false, [error])
     };
   }
 
   public static serverError(error: Error): HttpResponse {
     return {
       status: HttpStatus.INTERNAL_ERROR,
-      body: new Result(null, error.message, false, 'internal server error')
+      body: new Result(null, error.message, false, ['internal server error'])
     };
   }
 }

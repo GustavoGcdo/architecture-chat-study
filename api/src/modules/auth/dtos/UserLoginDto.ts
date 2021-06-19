@@ -1,6 +1,6 @@
 interface UserLoginDto {
-  name: string;
-  socketId: string;
+  userNameOrEmail: string;
+  password: string;
 }
 
 export default UserLoginDto;

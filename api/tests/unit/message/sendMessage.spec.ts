@@ -2,7 +2,7 @@ import { mock } from 'jest-mock-extended';
 import IMessageRepository from '../../../src/modules/message/repositories/messageRepository.interface';
 import IMessageDeliveryService from '../../../src/modules/message/services/messageDelivery.interface';
 import SendMessage from '../../../src/modules/message/usecases/sendMessage';
-import IUserRepository from '../../../src/modules/_shared/repositories/userRepository.interface';
+import IUserRepository from '../../../src/modules/user/repositories/userRepository.interface';
 
 describe('Use case Send message', () => {
   const mockMessageRepository = mock<IMessageRepository>();
@@ -14,9 +14,15 @@ describe('Use case Send message', () => {
   });
 
   it('Must be successful when send message', () => {
-    mockUserRepository.findByUsername.mockReturnValue({
-      name: 'Thiago',
-      socketId: 'aolfdsaasd'
+    mockUserRepository.findByUsername.mockReturnValueOnce({
+      id: 1,
+      completeName: 'Thiago Augusto Gonçalves Silva',
+      displayName: 'Thiago Augusto',
+      birthDate: new Date('2000-07-06'),
+      email: 'thiagoggth@gmail.com',
+      password: 'passwordFort',
+      userName: 'thiagoggth',
+      createdAt: new Date()
     });
 
     const sendMessageUseCase = new SendMessage(
@@ -57,11 +63,6 @@ describe('Use case Send message', () => {
   });
 
   it('Must be fail when not has user name', () => {
-    mockUserRepository.findByUsername.mockReturnValue({
-      name: 'Thiago',
-      socketId: 'aolfdsaasd'
-    });
-
     const sendMessageUseCase = new SendMessage(
       mockMessageRepository,
       mockUserRepository,
@@ -80,11 +81,6 @@ describe('Use case Send message', () => {
   });
 
   it('Must be fail when not has message text', () => {
-    mockUserRepository.findByUsername.mockReturnValue({
-      name: 'Thiago',
-      socketId: 'aolfdsaasd'
-    });
-
     const sendMessageUseCase = new SendMessage(
       mockMessageRepository,
       mockUserRepository,
@@ -103,11 +99,6 @@ describe('Use case Send message', () => {
   });
 
   it('Must be fail when not has message text and user name', () => {
-    mockUserRepository.findByUsername.mockReturnValue({
-      name: 'Thiago',
-      socketId: 'aolfdsaasd'
-    });
-
     const sendMessageUseCase = new SendMessage(
       mockMessageRepository,
       mockUserRepository,
